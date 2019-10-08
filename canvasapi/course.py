@@ -467,6 +467,33 @@ class Course(CanvasObject):
 
         return rubric_dict
 
+    def create_rubric_association(self, **kwargs):
+        """
+        """
+        response = self._requester.request(
+            "POST",
+            "courses/{}/rubric_associations".format(self.id),
+            _kwargs=combine_kwargs(**kwargs),
+        )
+        dictionary = response.json()
+
+        rubric_dict = {}
+
+        if "rubric" in dictionary:
+            r_dict = dictionary["rubric"]
+            rubric = Rubric(self._requester, r_dict)
+
+            rubric_dict = {"rubric": rubric}
+
+        if "rubric_association" in dictionary:
+            ra_dict = dictionary["rubric_association"]
+            rubric_association = RubricAssociation(self._requester, ra_dict)
+
+            rubric_dict.update({"rubric_association": rubric_association})
+
+        return rubric_dict
+        # return RubricAssociation(self._requester, response.json())
+
     def delete(self):
         """
         Permanently delete this course.
